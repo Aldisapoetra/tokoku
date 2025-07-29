@@ -15,7 +15,7 @@ export default function Page() {
         setProducts(res.data);
       })
       .catch((err) => {
-        console.error("Gagal memuat data:", err.message);
+        console.error("Gagal memuat data:", err);
       })
       .finally(() => {
         setLoading(false);

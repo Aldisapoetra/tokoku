@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CartItemType, formType } from "@app/types";
-
-const formatter = Intl.NumberFormat("id-ID");
+import { formatter } from "@utils/formatter";
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItemType[]>([]);

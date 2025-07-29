@@ -3,10 +3,9 @@
 import { CartItemType } from "@app/types";
 import Button from "@components/Button";
 import CartItem from "@components/CartItem";
+import { formatter } from "@utils/formatter";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const formatter = Intl.NumberFormat("id-ID");
 
 export default function CartPage() {
   const router = useRouter();

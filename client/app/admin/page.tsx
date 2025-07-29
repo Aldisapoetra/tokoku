@@ -3,30 +3,47 @@
 import Button from "@components/Button";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-const formatter = Intl.NumberFormat("id-ID", {
-  useGrouping: "always",
-});
+import { formatter } from "@utils/formatter";
+import { formState } from "@app/types";
+import { useRouter } from "next/navigation";
 
 export default function AdminProductcPage() {
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [user, setUser] = useState(null);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<formState>({
     name: "",
     description: "",
     image: "",
     price: "",
   });
 
-  const fecthProducts = async () => {
-    const storedUser = localStorage.getItem("user");
-    setUser(storedUser ? JSON.parse(storedUser) : {});
+  const router = useRouter();
 
+  // Pemeriksaan login dan admin
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!token) {
+      return router.push("/login");
+    }
+
+    if (user.role !== "admin") {
+      return router.push("/unauthorized");
+    }
+  });
+
+  // Fetch semua produk
+  const fecthProducts = async () => {
+    setLoading(true);
     try {
       const res = await axios.get("http://localhost:5000/api/products");
       setProducts(res.data);
     } catch (err) {
-      console.error(`Gagal memuat data: ${err.message}`);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,22 +51,31 @@ export default function AdminProductcPage() {
     fecthProducts();
   }, []);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    setUser(storedUser ? JSON.parse(storedUser) : {});
+  }, []);
+
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleAdd = async (e) => {
+  const token = localStorage.getItem("token");
+
     e.preventDefault();
 
-    if (!form.name || !form.description || !form.image || !form.price) {
-      alert("Semua field harus diisi.");
-    }
-
     try {
-      await axios.post("http://localhost:5000/api/products", {
-        ...form,
-        price: parseInt(form.price),
-      });
+      await axios.post(
+        "http://localhost:5000/api/products",
+        { ...form, price: parseInt(form.price) },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       alert("Produk berhasil ditambahkan.");
       setForm({
@@ -60,32 +86,33 @@ export default function AdminProductcPage() {
       });
       fecthProducts();
     } catch (err) {
-      console.error(`Gagal menambahkan produk. ${err.message}`);
+      alert(err.response?.data?.message || "Terjadi error di backend");
+      console.error(err || "Gagal");
     }
   };
 
   const handleDelete = async (id: string) => {
+  const token = localStorage.getItem("token");
+
     if (!confirm("Yakin ingin menghapus produk ini?")) return;
 
     try {
       const res = await axios.delete(
         `http://localhost:5000/api/products/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       fecthProducts();
       alert(res.data.message);
-      console.log(res);
+      console.log(res.data.message);
     } catch (err) {
-      console.error(`Gagal menghapus produk. ${err.message}`);
+      alert(err.response?.data?.message || "Gagal menghapus produk");
+      console.error(err.response?.data?.message || "Gagal menghapus produk");
     }
   };
-
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="rounded-lg border border-red-500 bg-yellow-200 p-4 font-semibold text-red-500">
-        Hanya admin yang dapat mengakses halaman ini
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl">
@@ -140,7 +167,9 @@ export default function AdminProductcPage() {
         <Button bg="bg-green-600 hover:bg-green-700">Tambahkan Produk</Button>
       </form>
 
-      {products.length === 0 ? (
+      {/* {loading ? <p>memuat...</p> : <>sudah...</>} */}
+
+      {loading ? (
         <div className="p-4">
           <p className="text-lg font-semibold text-slate-700">
             Belum ada produk

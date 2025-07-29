@@ -5,6 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { jwt } from "jsonwebtoken";
 
 export default function LoginPage() {
   const [form, setForm] = useState({
@@ -31,11 +32,12 @@ export default function LoginPage() {
       window.dispatchEvent(new Event("userChange"));
 
       alert(`Selamat Datang ${user.name}`);
-      console.log(token);
+      console.log(`token: ${token}`);
+      console.log(`user: ${JSON.stringify(user)}`);
       router.push("/");
     } catch (err) {
       alert(err.response?.data?.message || "Gagal Login");
-      console.error(err.response?.data?.message);
+      console.error(err);
     }
   };
 

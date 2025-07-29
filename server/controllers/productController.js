@@ -2,8 +2,13 @@ const { json } = require("express")
 const Product = require("../models/Product")
 
 const getAllProducts = async (req, res) => {
-  const products = await Product.find()
-  res.json(products)
+  try {
+    const products = await Product.find()
+    res.json(products)
+  } catch (err) {
+    res.status(500).json({ message: "terjadi error" })
+    console.log('error guys')
+  }
 }
 
 const getProductById = async (req, res) => {
@@ -18,8 +23,17 @@ const createProduct = async (req, res) => {
 
     // Validasi sederhana (opsional tapi penting)
     if (!name || !price || !description || !image) {
-      return res.status(400).json({ message: 'Semua field harus diisi.' });
-    }
+      console.log('Semua field harus diisi')
+      return res.status(401).
+        json({ message: 'Semua field harus diisi.' })
+    };
+
+    const priceNumber = parseInt(price)
+    if (isNaN(priceNumber) || price <= 0) {
+      console.log('Harga produk harus angka positif')
+      return res.status(500).json({ message: 'Harga produk harus angka positif.' })
+    };
+
 
     const newProduct = new Product({
       name,

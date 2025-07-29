@@ -17,6 +17,6 @@ app.use('/api/auth', Auth)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Database connected!')
-    app.listen(5000)
+    app.listen(process.env.PORT)
   })
   .catch(err => console.log(`Error: ${err.message}`))

@@ -1,16 +1,26 @@
 {
-  "name": "tokoku",
+  "name": "tokoku-monorepo",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
   "version": "1.0.0",
-  "description": "",
+  "description": "Tokoku adalah aplikasi e-commerce berbasis MERN Stack (MongoDB, Express.js, React (Next.js), Node.js) dengan dukungan autentikasi JWT, role-based access (Admin & User), dan sistem keranjang belanja. Proyek ini menggunakan Monorepo untuk mengelola server (backend) dan client (frontend) dalam satu repository",
   "repository": {
     "type": "git",
-    "url": "tokoku"
+    "url": "https://github.com/Aldisapoetra/tokoku.git"
   },
-  "license": "ISC",
-  "author": "aldi",
+  "license": "MIT",
+  "author": "Aldi Saputra",
   "type": "commonjs",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+    "install-all": "npm install --workspaces",
+    "build": "npm run build --workspace=server && npm run build --workspace=client",
+    "start": "npm run start --workspace=server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
   }
 }

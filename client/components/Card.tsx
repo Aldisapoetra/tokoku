@@ -1,3 +1,4 @@
+import { formatter } from "@utils/formatter";
 import Link from "next/link";
 
 interface CardProps {
@@ -8,8 +9,6 @@ interface CardProps {
 }
 
 export default function Card(props: CardProps) {
-  const formatter = Intl.NumberFormat("id-ID");
-
   return (
     <div
       className="my-4 flex h-[354px] w-[188px] flex-col justify-between overflow-hidden rounded-2xl shadow-sm"

@@ -7,6 +7,7 @@ interface itemType {
   qty: number;
 }
 
+import { formatter } from "@utils/formatter";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,8 +16,6 @@ export default function DetailProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const formatter = Intl.NumberFormat("id-ID");
 
   useEffect(() => {
     if (id) {
