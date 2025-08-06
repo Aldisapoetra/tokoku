@@ -11,16 +11,17 @@ const verifyToken = (req, res, next) => {
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decode
-    console.log(`verifyToken req.user: ${JSON.stringify(req.user)}`)
+    console.log(`verifyToken, token: ${token}`)
+    console.log(`verifyToken, req.user: ${JSON.stringify(req.user)}`)
     next()
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" })
+    res.status(403).json({ message: "Token tidak valid, silakan login kembali" })
   }
 }
 
 const verifyAdmin = (req, res, next) => {
   if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Access denied: Admin only" })
+    return res.status(403).json({ message: "Akses ditolak, anda bukan admin!" })
   }
   next()
 }

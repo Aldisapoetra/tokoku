@@ -23,3 +23,10 @@ export interface typeProduct {
   name: string;
   price: string;
 }
+
+export interface CardProps {
+  id?: string;
+  name: string;
+  description: string;
+  price: number;
+}

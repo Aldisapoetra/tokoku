@@ -1,8 +1,8 @@
 const express = require('express')
+const router = express.Router()
 const { getAllProducts, getProductById, createProduct, deleteProductById } = require('../controllers/productController')
 const { verifyToken, verifyAdmin } = require('../middleware/verify')
 
-const router = express.Router()
 
 router.get('/', getAllProducts)
 router.get('/:id', getProductById)

@@ -1,22 +1,16 @@
+import { CardProps } from "@app/types";
 import { formatter } from "@utils/formatter";
 import Link from "next/link";
-
-interface CardProps {
-  id?: string;
-  name: string;
-  description: string;
-  price: number;
-}
 
 export default function Card(props: CardProps) {
   return (
     <div
-      className="my-4 flex h-[354px] w-[188px] flex-col justify-between overflow-hidden rounded-2xl shadow-sm"
+      className="my-4 flex h-[354px] w-fit flex-col justify-between overflow-hidden rounded-2xl shadow-sm md:w-[188px]"
       key={props.id}
     >
       <Link href={`/products/${props.id}`}>
         <div className="product-image h-[200px] w-full bg-linear-to-r from-white to-gray-100"></div>
-        <div className="flex h-[150px] w-full flex-col items-center justify-evenly py-4">
+        <div className="flex h-[150px] w-full flex-col items-center justify-evenly px-2 py-4">
           <div className="product-title h-max w-[150px] font-semibold">
             {props.name}
           </div>

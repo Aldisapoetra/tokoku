@@ -5,7 +5,6 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { jwt } from "jsonwebtoken";
 
 export default function LoginPage() {
   const [form, setForm] = useState({
@@ -37,7 +36,13 @@ export default function LoginPage() {
       router.push("/");
     } catch (err) {
       alert(err.response?.data?.message || "Gagal Login");
-      console.error(err);
+      console.error(err.response?.data?.message);
+      if (
+        err.response?.data?.message ===
+        "Akun belum diverifikasi, silakan cek email OTP!"
+      ) {
+        return router.push(`verify-otp?email=${form.email}`);
+      }
     }
   };
 

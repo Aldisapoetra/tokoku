@@ -20,19 +20,21 @@ export default function AdminProductcPage() {
 
   const router = useRouter();
 
+  const token = localStorage.getItem("token");
+
   // Pemeriksaan login dan admin
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const user = JSON.parse(localStorage.getItem("user"));
 
-    if (!token) {
-      return router.push("/login");
-    }
+  //   if (!token) {
+  //     return router.push("/login");
+  //   }
 
-    if (user.role !== "admin") {
-      return router.push("/unauthorized");
-    }
-  });
+  //   if (user.role !== "admin") {
+  //     return router.push("/unauthorized");
+  //   }
+  // });
 
   // Fetch semua produk
   const fecthProducts = async () => {
@@ -56,14 +58,11 @@ export default function AdminProductcPage() {
     setUser(storedUser ? JSON.parse(storedUser) : {});
   }, []);
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleAdd = async (e) => {
-  const token = localStorage.getItem("token");
-
     e.preventDefault();
 
     try {
@@ -85,15 +84,14 @@ export default function AdminProductcPage() {
         price: "",
       });
       fecthProducts();
+      console.log(form);
     } catch (err) {
       alert(err.response?.data?.message || "Terjadi error di backend");
-      console.error(err || "Gagal");
+      console.error(err.response?.data?.message || "Gagal");
     }
   };
 
   const handleDelete = async (id: string) => {
-  const token = localStorage.getItem("token");
-
     if (!confirm("Yakin ingin menghapus produk ini?")) return;
 
     try {
@@ -103,7 +101,7 @@ export default function AdminProductcPage() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       fecthProducts();
       alert(res.data.message);

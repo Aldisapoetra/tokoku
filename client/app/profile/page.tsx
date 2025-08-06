@@ -19,13 +19,17 @@ export default function ProfilePage() {
   }, [router]);
 
   const handleLogout = () => {
+    const confirmLogout = confirm("Apakah anda yakin ingin logout?");
+    if (!confirmLogout) {
+      return;
+    }
     localStorage.removeItem("user");
     localStorage.removeItem("token");
 
     // Membuat custom event bernama userChange
     window.dispatchEvent(new Event("userChange"));
     setUser(null);
-    router.push("/");
+    router.push("/login");
   };
 
   const handleDeleteAccount = async (id: string) => {

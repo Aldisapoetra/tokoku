@@ -24,18 +24,18 @@ export default function RegisterPage() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,
         role: form.email === "aldi3191@gmail.com" ? "admin" : "user",
       });
 
-      alert("Registrasi berhasil, silakan login!");
-      router.push("/login");
+      alert(res.data.message);
+      router.push(`/verify-otp?email=${form.email}`);
     } catch (err) {
-      alert(err.response?.data?.message);
-      console.error(err.response?.data?.message || "Registrasi gagal");
+      alert(err.response?.data?.message || "Terjai kesalahan");
+      console.error(err.response?.data?.message || "Terjai kesalahan");
     }
   };
 
@@ -49,7 +49,7 @@ export default function RegisterPage() {
         onSubmit={handleRegister}
         className="mx-auto mb-4 flex w-full flex-col items-center gap-4 rounded-lg border border-slate-200 p-8 pb-4 text-center shadow-md sm:max-w-[300px] md:max-w-[400px]"
       >
-        <h1 className="mb-6 text-3xl font-bold text-slate-700">Buat Akun</h1>
+        <h1 className="mb-6 text-3xl font-bold text-slate-700">Daftar Akun</h1>
         <input
           type="text"
           name="name"

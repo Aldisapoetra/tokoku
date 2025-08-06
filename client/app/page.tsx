@@ -15,7 +15,7 @@ export default function Page() {
         setProducts(res.data);
       })
       .catch((err) => {
-        console.error("Gagal memuat data:", err);
+        console.error(err);
       })
       .finally(() => {
         setLoading(false);
@@ -28,11 +28,11 @@ export default function Page() {
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold text-slate-700">
-        Selamat Datang di Toko Kami!
+        Selamat Datang di Tokoku!
       </h1>
 
       <div>
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-4 pt-4">
           {products.length !== 0
             ? products.map((product) => (
                 <Card
