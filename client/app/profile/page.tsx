@@ -68,7 +68,7 @@ export default function ProfilePage() {
             <strong>Email:</strong> {user.email}
           </p>
           <p>
-            <strong>Peran:</strong> {user.role}
+            <strong>Role:</strong> {user.role}
           </p>
 
           <div className="buttons mt-4 flex max-w-fit gap-4">

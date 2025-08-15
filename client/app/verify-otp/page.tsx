@@ -52,7 +52,6 @@ export default function verifyOtpPage() {
         { email },
       );
       alert(res.data.message);
-      console.log("aldi");
     } catch (err: any) {
       if (
         err?.response?.data?.message === "getaddrinfo ENOTFOUND smtp.gmail.com"
@@ -77,7 +76,7 @@ export default function verifyOtpPage() {
     <div className="pt-20">
       <form
         onSubmit={handleVerify}
-        className="mx-auto mb-4 flex w-full flex-col items-center gap-4 rounded-lg border border-slate-200 p-8 pb-4 text-center shadow-md sm:max-w-[300px] md:max-w-[400px]"
+        className="mx-auto mb-4 flex w-full flex-col items-center gap-4 rounded-lg border border-slate-200 p-8 pb-2 text-center shadow-md sm:max-w-[300px] md:max-w-[400px]"
       >
         <h1 className="mb-6 text-3xl font-bold text-slate-700">
           Verifikasi OTP
@@ -96,10 +95,15 @@ export default function verifyOtpPage() {
         <Button bg="bg-green-600 hover:bg-green-700 duration-300">
           Verifikasi
         </Button>
+        <button
+          type="button"
+          onClick={handleResendOtp}
+          disabled={isResending}
+          className="mx-auto w-full duration-300 hover:cursor-pointer hover:text-blue-400"
+        >
+          {isResending ? "Mengirim ulang.." : "Kirim ulang OTP"}
+        </button>
       </form>
-      <button type="button" onClick={handleResendOtp} disabled={isResending}>
-        {isResending ? "Mengirim ulang.." : "Kirim ulang OTP"}
-      </button>
     </div>
   );
 }

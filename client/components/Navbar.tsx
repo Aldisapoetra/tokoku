@@ -54,7 +54,10 @@ export default function Navbar() {
           <Link href="/cart">Keranjang</Link>
         </li>
         <li className="text-slate-700 duration-300 hover:text-green-600">
-          <Link href={user ? "profile" : "login"} className="flex items-center">
+          <Link
+            href={user ? "/profile" : "/login"}
+            className="flex items-center"
+          >
             <HiUserCircle className="size-6" />
 
             {user && <span>{user.name}</span>}

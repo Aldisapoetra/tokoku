@@ -1,12 +1,6 @@
 "use client";
 
-interface itemType {
-  _id: string;
-  name: string;
-  price: number;
-  qty: number;
-}
-
+import { itemType } from "@app/types";
 import { formatter } from "@utils/formatter";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -21,7 +15,10 @@ export default function DetailProductPage() {
     if (id) {
       axios
         .get(`http://localhost:5000/api/products/${id}`)
-        .then((res) => setProduct(res.data))
+        .then((res) => {
+          setProduct(res.data);
+          console.log(product);
+        })
         .catch((err) => console.log(`Error guys: ${err.message}`))
         .finally(() => setLoading(false));
     }

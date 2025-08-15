@@ -19,18 +19,16 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    const { name, price, description, image } = req.body;
+    const { name, price, description, image, quantity } = req.body;
 
     // Validasi sederhana (opsional tapi penting)
-    if (!name || !price || !description || !image) {
-      console.log('Semua field harus diisi')
+    if (!name || !price || !description || !image || !quantity) {
       return res.status(401).
         json({ message: 'Semua field harus diisi.' })
     };
 
     const priceNumber = parseInt(price)
     if (isNaN(priceNumber) || price <= 0) {
-      console.log('Harga produk harus angka positif')
       return res.status(500).json({ message: 'Harga produk harus angka positif.' })
     };
 
@@ -40,6 +38,7 @@ const createProduct = async (req, res) => {
       price,
       description,
       image,
+      quantity
     });
 
     await newProduct.save();
@@ -47,10 +46,40 @@ const createProduct = async (req, res) => {
     res.status(201).json(newProduct); // ✅ 201 = Created
     console.log(newProduct)
   } catch (err) {
-    console.log(`Error: ${err.message}`);
     res.status(500).json({ message: err.message });
   }
 };
+
+const updateProductById = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { name, description, image, price, quantity } = req.body
+
+    const priceNumber = parseInt(price)
+    if (isNaN(priceNumber) || priceNumber <= 0) {
+      return res.status(500).json({ message: "Harga produk harus angka positif" })
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description,
+        image,
+        price,
+        quantity
+      },
+      { new: true })
+
+    if (!product) {
+      return res.status(404).json({ message: "Produk tidak ditemukan" })
+    }
+
+    res.json({ message: "Produk berhasil diperbarui" })
+  } catch (err) {
+    res.status(500).json({ message: "Gagal memperbarui produk", error: err.message })
+  }
+}
 
 const deleteProductById = async (req, res) => {
   try {
@@ -67,4 +96,4 @@ const deleteProductById = async (req, res) => {
 }
 
 
-module.exports = { getAllProducts, getProductById, createProduct, deleteProductById }
+module.exports = { getAllProducts, getProductById, createProduct, updateProductById, deleteProductById }

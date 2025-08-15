@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         {/* <AuthProvider> */}
         <Navbar />
-        <div className="mx-auto min-h-dvh w-full border px-4 py-24 md:max-w-[1208px]">
+        <div className="mx-auto min-h-dvh w-full px-4 py-24 md:max-w-[1208px]">
           {children}
         </div>
         <Footer />

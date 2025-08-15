@@ -16,6 +16,7 @@ export interface formState {
   description: string;
   image: string;
   price: string;
+  quantity: string;
 }
 
 export interface typeProduct {
@@ -29,4 +30,11 @@ export interface CardProps {
   name: string;
   description: string;
   price: number;
+}
+
+export interface itemType {
+  _id: string;
+  name: string;
+  price: number;
+  qty: number;
 }

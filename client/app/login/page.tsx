@@ -39,7 +39,7 @@ export default function LoginPage() {
       console.error(err.response?.data?.message);
       if (
         err.response?.data?.message ===
-        "Akun belum diverifikasi, silakan cek email OTP!"
+        "Akun anda belum diverifikasi. Silakan Verifikasi email terlebih dahulu"
       ) {
         return router.push(`verify-otp?email=${form.email}`);
       }

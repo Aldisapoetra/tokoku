@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { formatter } from "@utils/formatter";
 import { formState } from "@app/types";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminProductcPage() {
   const [loading, setLoading] = useState(false);
@@ -16,13 +17,12 @@ export default function AdminProductcPage() {
     description: "",
     image: "",
     price: "",
+    quantity: "",
   });
 
   const router = useRouter();
 
-  const token = localStorage.getItem("token");
-
-  // Pemeriksaan login dan admin
+  // // Pemeriksaan login dan admin
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
   //   const user = JSON.parse(localStorage.getItem("user"));
@@ -64,11 +64,15 @@ export default function AdminProductcPage() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     try {
       await axios.post(
         "http://localhost:5000/api/products",
-        { ...form, price: parseInt(form.price) },
+        {
+          ...form,
+          price: parseInt(form.price),
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,16 +86,18 @@ export default function AdminProductcPage() {
         description: "",
         image: "",
         price: "",
+        quantity: "",
       });
       fecthProducts();
       console.log(form);
     } catch (err) {
-      alert(err.response?.data?.message || "Terjadi error di backend");
+      alert(err.response?.data?.message || "Gagal");
       console.error(err.response?.data?.message || "Gagal");
     }
   };
 
   const handleDelete = async (id: string) => {
+    const token = localStorage.getItem("token");
     if (!confirm("Yakin ingin menghapus produk ini?")) return;
 
     try {
@@ -111,6 +117,10 @@ export default function AdminProductcPage() {
       console.error(err.response?.data?.message || "Gagal menghapus produk");
     }
   };
+
+  // const updateProduct = async (id: string) => {
+  //   router.push(`/admin/update/${id}`);
+  // };
 
   return (
     <div className="max-w-4xl">
@@ -162,6 +172,15 @@ export default function AdminProductcPage() {
           autoComplete="off"
           className="h-8 w-full rounded-lg border border-slate-400 px-2"
         />
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Quantitas"
+          value={form.quantity}
+          onChange={handleChange}
+          autoComplete="off"
+          className="h-8 w-full rounded-lg border border-slate-400 px-2"
+        />
         <Button bg="bg-green-600 hover:bg-green-700">Tambahkan Produk</Button>
       </form>
 
@@ -174,12 +193,12 @@ export default function AdminProductcPage() {
           </p>
         </div>
       ) : (
-        <table className="border text-sm">
+        <table className="w-[700px] border text-sm">
           <thead>
             <tr>
               <th className="border bg-slate-200 p-2">Nama</th>
               <th className="border bg-slate-200 p-2">Harga</th>
-              <th className="border bg-slate-200 p-2">Aksi</th>
+              <th className="bg-slate-200 p-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -189,14 +208,22 @@ export default function AdminProductcPage() {
                 <td className="border-r border-b px-2">
                   Rp{formatter.format(product.price)}
                 </td>
-                <td className="border-r border-b px-2">
-                  {" "}
+                <td className="flex justify-center border-t px-2">
                   <button
                     onClick={() => handleDelete(product._id)}
                     className="my-1 rounded-lg bg-red-500 px-2 py-1 text-sm text-white hover:cursor-pointer hover:bg-red-700"
                   >
                     Hapus
                   </button>
+
+                  <Link href={`/admin/update/${product._id}`}>
+                    <button
+                      // onClick={() => updateProduct(product._id)}
+                      className="my-1 rounded-lg bg-yellow-500 px-2 py-1 text-sm text-white hover:cursor-pointer hover:bg-yellow-700"
+                    >
+                      Edit
+                    </button>
+                  </Link>
                 </td>
               </tr>
             ))}
