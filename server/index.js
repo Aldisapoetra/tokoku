@@ -3,7 +3,8 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const productRoutes = require('./routes/productRoutes')
-const Auth = require('./routes/auth')
+const Auth = require('./routes/authRoutes')
+const Cart = require('./routes/cartRoutes')
 
 dotenv.config()
 const app = express()
@@ -13,6 +14,7 @@ app.use(express.json())
 
 app.use('/api/products', productRoutes)
 app.use('/api/auth', Auth)
+app.use('/api/cart', Cart)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

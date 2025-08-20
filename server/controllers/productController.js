@@ -91,7 +91,17 @@ const deleteProductById = async (req, res) => {
     }
     res.json({ message: "Produk berhasil dihapus" })
   } catch (err) {
-    res.status(500).json({ message: 'Proses gagal' })
+    res.status(500).json({ message: 'Terjadi kesalahan server' })
+  }
+}
+
+const addToCart = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body
+
+
+  } catch (err) {
+
   }
 }
 

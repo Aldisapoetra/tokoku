@@ -1,38 +1,66 @@
 "use client";
 
-import { CartItemType } from "@app/types";
+// import { CartItemType } from "@app/types";
 import Button from "@components/Button";
 import CartItem from "@components/CartItem";
 import { formatter } from "@utils/formatter";
+import axios from "axios";
 import { useRouter } from "next/navigation";
+import { it } from "node:test";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {
   const router = useRouter();
-  const [cart, setCart] = useState<CartItemType[]>([]);
+  const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
+
+  const fetchCart = async () => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:5000/api/cart", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setCart(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.error(err));
+  };
 
   useEffect(() => {
     // Pengecekan user login atau belum
     const storedUser = localStorage.getItem("user");
     setUser(storedUser ? storedUser : null);
 
-    // Inisialisasi isi Cart
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(storedCart);
+    fetchCart();
   }, []);
 
-  const handleRemove = (id: string) => {
-    const updatedCart = cart.filter((item) => item._id !== id);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  const handleRemove = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.delete(`http://localhost:5000/api/cart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(res.data.message);
+      console.log(res.data.message);
+
+      fetchCart();
+    } catch (err) {
+      alert(err.message);
+      console.log(err.message);
+    }
   };
 
   const handleClick = () => {
     router.push("/products");
   };
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
 
   if (!user) {
     return (
@@ -60,7 +88,7 @@ export default function CartPage() {
       ) : (
         <div className="flex flex-col gap-4">
           {cart.map((item) => (
-            <CartItem key={item._id} item={item} handleRemove={handleRemove} />
+            <CartItem key={item.id} item={item} handleRemove={handleRemove} />
           ))}
 
           <div className="mt-4 text-right">

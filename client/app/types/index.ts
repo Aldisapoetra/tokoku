@@ -1,9 +1,9 @@
-export interface CartItemType {
-  _id: string;
-  name: string;
-  price: number;
-  qty: number;
-}
+// export interface CartItemType {
+//   _id: string;
+//   name: string;
+//   price: number;
+//   qty: number;
+// }
 
 export interface formType {
   name: string;
@@ -33,7 +33,7 @@ export interface CardProps {
 }
 
 export interface itemType {
-  _id: string;
+  id: string;
   name: string;
   price: number;
   qty: number;

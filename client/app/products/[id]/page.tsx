@@ -15,35 +15,53 @@ export default function DetailProductPage() {
     if (id) {
       axios
         .get(`http://localhost:5000/api/products/${id}`)
-        .then((res) => {
-          setProduct(res.data);
-          console.log(product);
-        })
+        .then((res) => setProduct(res.data))
         .catch((err) => console.log(`Error guys: ${err.message}`))
         .finally(() => setLoading(false));
     }
   }, [id]);
 
-  const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  // console.log(product);
 
-    let item: itemType = {
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      qty: 1,
-    };
+  // const handleAddToCart = () => {
+  // const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  // let item: itemType = {
+  //   _id: product._id,
+  //   name: product.name,
+  //   price: product.price,
+  //   qty: 1,
+  // };
+  // const existing = cart.find((i: { _id: string }) => i._id === item._id);
+  // if (existing) {
+  //   existing.qty += 1;
+  // } else {
+  //   cart.push(item);
+  // }
+  // localStorage.setItem("cart", JSON.stringify(cart));
+  // alert("Berhasil menambahkan produk ke keranjang");
+  // };
 
-    const existing = cart.find((i: { _id: string }) => i._id === item._id);
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(product._id);
+      const res = await axios.post(
+        "http://localhost:5000/api/cart",
+        {
+          productId: product._id,
+          quantity: 1,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push(item);
+      alert(res.data.message);
+      console.log(res.data.message);
+    } catch (err) {
+      console.error(err.response?.data?.message);
+      alert("Gagal menambahkan produk ke cart");
     }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Berhasil menambahkan produk ke keranjang");
   };
 
   if (loading) return <p>Loading...</p>;
