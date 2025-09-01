@@ -1,6 +1,7 @@
 "use client";
 
 import { itemType } from "@app/types";
+import { axiosCookie } from "@lib/axiosCookie";
 import { formatter } from "@utils/formatter";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -42,25 +43,53 @@ export default function DetailProductPage() {
   // };
 
   const handleAddToCart = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      console.log(product._id);
-      const res = await axios.post(
-        "http://localhost:5000/api/cart",
-        {
-          productId: product._id,
-          quantity: 1,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+    // try {
+    //   const token = localStorage.getItem("token");
+    //   console.log(product._id);
+    //   const res = await axios.post(
+    //     "http://localhost:5000/api/cart",
+    //     {
+    //       productId: product._id,
+    //       quantity: 1,
+    //     },
+    //     {
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     },
+    //   );
+    //   alert(res.data.message);
+    //   console.log(res.data.message);
+    // } catch (err) {
+    //   console.error(err.response?.data?.message);
+    //   alert(err.response?.data?.message);
+    // }
 
-      alert(res.data.message);
+    // try {
+    //   const res = await axios.post(
+    //     "http://localhost:5000/api/cart",
+    //     {
+    //       productId: product._id,
+    //       quantity: 1,
+    //     },
+    //     {
+    //       withCredentials: true,
+    //     },
+    //   );
+    //   console.log(res);
+    // } catch (err) {
+    //   console.log(err?.response?.data?.message);
+    //   alert(err?.response?.data?.message);
+    // }
+
+    try {
+      const res = await axiosCookie.post("/api/cart", {
+        productId: product._id,
+        quantity: 1,
+      });
       console.log(res.data.message);
+      alert(res.data.message);
     } catch (err) {
-      console.error(err.response?.data?.message);
-      alert("Gagal menambahkan produk ke cart");
+      console.log(err);
+      alert(err);
     }
   };
 

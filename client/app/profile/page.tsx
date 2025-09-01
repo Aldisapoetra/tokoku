@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@components/Button";
+import { axiosCookie } from "@lib/axiosCookie";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,18 +19,40 @@ export default function ProfilePage() {
     setUser(JSON.parse(storedUser));
   }, [router]);
 
-  const handleLogout = () => {
-    const confirmLogout = confirm("Apakah anda yakin ingin logout?");
+  // const handleLogout = () => {
+  //   const confirmLogout = confirm("Anda yakin ingin logout?");
+  //   if (!confirmLogout) {
+  //     return;
+  //   }
+  //   localStorage.removeItem("user");
+  //   localStorage.removeItem("token");
+
+  //   // Membuat custom event bernama userChange
+  //   window.dispatchEvent(new Event("userChange"));
+  //   setUser(null);
+  //   router.push("/login");
+  // };
+
+  const handleLogout = async () => {
+    const confirmLogout = confirm("Anda yakin ingin logout?");
     if (!confirmLogout) {
       return;
     }
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-
-    // Membuat custom event bernama userChange
-    window.dispatchEvent(new Event("userChange"));
-    setUser(null);
-    router.push("/login");
+    try {
+      const res = await axiosCookie.post("/api/auth/logout");
+      if (res.status === 200) {
+        localStorage.removeItem("user");
+        //   // Membuat custom event bernama userChange
+        window.dispatchEvent(new Event("userChange"));
+        setUser(null);
+        alert(res.data.message);
+        console.log(res.data.message);
+        router.push("/login");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err);
+    }
   };
 
   const handleDeleteAccount = async (id: string) => {
@@ -40,6 +63,8 @@ export default function ProfilePage() {
       alert(res.data.message);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+
+      // Membuat custom event bernama userChange
       window.dispatchEvent(new Event("userChange"));
       router.push("/");
       console.log(res);
@@ -62,13 +87,10 @@ export default function ProfilePage() {
       <div className="p-4">
         <div className="max-w-md space-y-2 rounded-lg border border-gray-100 p-4 shadow-md">
           <p>
-            <strong>Name:</strong> {user.name}
+            <strong>Nama:</strong> {user.name}
           </p>
           <p>
             <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Role:</strong> {user.role}
           </p>
 
           <div className="buttons mt-4 flex max-w-fit gap-4">

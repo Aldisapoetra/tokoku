@@ -5,10 +5,9 @@ const Users = require('../models/User')
 dotenv.config()
 
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization
-  if (!authHeader) return res.status(403).json({ message: "No token provided" })
+  const token = req.cookies?.accessToken
+  if (!token) return res.status(403).json({ message: "Token tidak disediakan" })
 
-  const token = authHeader.split(" ")[1]
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decode

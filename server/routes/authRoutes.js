@@ -2,11 +2,13 @@ const express = require('express')
 const router = express.Router()
 const Users = require('../models/User')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
-const { verifyOtp } = require('../middleware/verify')
+const { verifyOtp, verifyToken } = require('../middleware/verify')
 const sendOtpEmail = require('../utils/sendOtpEmail')
+const { signAccessToken } = require('../utils/tokens')
+const { cookieOpts } = require('../utils/cookies')
 
 dotenv.config()
 
@@ -99,22 +101,35 @@ router.post("/resend-otp", async (req, res) => {
 
 // LOGIN
 router.post('/login', verifyOtp, async (req, res) => {
+  console.log("1. Mulai login")
   const { email, password } = req.body
 
   try {
     const user = await Users.findOne({ email })
     if (!user) return res.status(404).json({ message: "User tidak ditemukan" })
 
-
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) return res.status(400).json({ message: "Password anda salah" })
+    console.log("2. Password cocok")
 
-    const token = jwt.sign({ id: user._id, name: user.name, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified } })
+    const accessToken = signAccessToken({ id: user._id, name: user.name, role: user.role })
+    console.log("3. Token berhasil dibuat", accessToken)
+    res.cookie("accessToken", accessToken, { ...cookieOpts, maxAge: 1000 * 60 * 30 })
+    res.cookie("user", { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified })
+    console.log("4. Cookie berhasil dikirimkan")
+    res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified } })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 })
+
+// LOGOUT
+router.post("/logout", (req, res) => {
+  res.clearCookie("accessToken", { ...cookieOpts })
+  res.clearCookie("user", { ...cookieOpts })
+  res.json({ message: "Berhasil logout" })
+})
+
 
 // DELETE ACCOUNT
 router.delete("/:id", async (req, res) => {

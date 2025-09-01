@@ -6,8 +6,7 @@ import { HiMinus, HiPlus } from "react-icons/hi";
 
 const formatter = Intl.NumberFormat("id-ID");
 
-export default function CartItem({ item, handleRemove }) {
-  // console.log(item.name);
+export default function CartItem({ item, handleRemove, increment, decrement }) {
   return (
     <div className="flex items-center justify-between rounded border p-4 shadow-sm">
       <div>
@@ -17,13 +16,17 @@ export default function CartItem({ item, handleRemove }) {
         </p>
         <div className="text-sm text-gray-700">
           <div className="flex w-fit gap-4 rounded-2xl border border-gray-300 px-2 py-1">
-            <span className="text-xl">
+            <button
+              onClick={() => decrement(item.id)}
+              disabled={item.quantity <= 1 ? true : false}
+              className="text-xl disabled:text-slate-400"
+            >
               <HiMinus />
-            </span>
+            </button>
             <span className="">{item.quantity}</span>
-            <span className="text-xl">
+            <button onClick={() => increment(item.id)} className="text-xl">
               <HiPlus />
-            </span>
+            </button>
           </div>
         </div>
       </div>

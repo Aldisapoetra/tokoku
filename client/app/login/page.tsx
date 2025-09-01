@@ -2,6 +2,7 @@
 
 import Button from "@components/Button";
 import axios from "axios";
+import { axiosCookie } from "@lib/axiosCookie";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,22 +17,20 @@ export default function LoginPage() {
 
   const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         form,
+        { withCredentials: true },
       );
-      const { token, user } = res.data;
+      const { user } = res.data;
 
-      localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
       // Membuat custom event bernama userChange
       window.dispatchEvent(new Event("userChange"));
 
       alert(`Selamat Datang ${user.name}`);
-      console.log(`token: ${token}`);
       console.log(`user: ${JSON.stringify(user)}`);
       router.push("/");
     } catch (err) {
@@ -52,6 +51,11 @@ export default function LoginPage() {
       [e.target.name]: e.target.value,
     });
   };
+
+  if (localStorage.getItem("user")) {
+    router.push("/");
+    return;
+  }
 
   return (
     <div className="pt-20">

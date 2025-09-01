@@ -8,6 +8,7 @@ const router = express.Router()
 router.post("/", verifyToken, async (req, res) => {
   try {
     const { productId, quantity } = req.body
+    console.log(productId, quantity)
 
     // pengecekan produk di database produk
     const product = await Product.findById(productId)
@@ -36,7 +37,9 @@ router.post("/", verifyToken, async (req, res) => {
     })
 
     await newCartItem.save()
-    res.status(201).json({ message: "Produk ditambahkan ke cart", cart: newCartItem })
+    res.status(201)
+    // res.cookie("accessToken", )
+    res.json({ message: "Produk ditambahkan ke cart", cart: newCartItem })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: "Terjadi kesalahan server" })
@@ -82,5 +85,24 @@ router.delete("/:id", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan server" })
   }
 })
+
+// Mengubah kuantitas item di cart
+router.patch("/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { quantity } = req.body
+    const item = await Cart.findByIdAndUpdate(id, { $inc: { quantity } }, { new: true })
+    console.log(item)
+
+    if (!item) {
+      return res.status(404).json({ message: "Produk tidak ditemukan" })
+    }
+    res.status(200).json({ message: "berhasil mengubah kuantitas" })
+  } catch (err) {
+    res.status(500).json({ message: "Gagal mengubah kuantitas", error: err.message })
+  }
+})
+
+
 
 module.exports = router

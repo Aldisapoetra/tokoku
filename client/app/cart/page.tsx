@@ -3,10 +3,9 @@
 // import { CartItemType } from "@app/types";
 import Button from "@components/Button";
 import CartItem from "@components/CartItem";
+import { axiosCookie } from "@lib/axiosCookie";
 import { formatter } from "@utils/formatter";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { it } from "node:test";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {
@@ -15,41 +14,51 @@ export default function CartPage() {
   const [user, setUser] = useState(null);
 
   const fetchCart = async () => {
-    const token = localStorage.getItem("token");
-    axios
-      .get("http://localhost:5000/api/cart", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setCart(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.error(err));
+    try {
+      const res = await axiosCookie.get("/api/cart");
+      setCart(res.data);
+    } catch (err) {
+      console.error(err.response?.data?.message);
+      alert(err.response?.data?.message);
+    }
   };
 
   useEffect(() => {
     // Pengecekan user login atau belum
     const storedUser = localStorage.getItem("user");
     setUser(storedUser ? storedUser : null);
-
     fetchCart();
   }, []);
 
   const handleRemove = async (id: string) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.delete(`http://localhost:5000/api/cart/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert(res.data.message);
+      const res = await axiosCookie.delete(`/api/cart/${id}`);
       console.log(res.data.message);
-
+      alert(res.data.message);
       fetchCart();
     } catch (err) {
-      alert(err.message);
-      console.log(err.message);
+      console.error(err.response?.data?.message);
+      alert(err.response?.data?.message);
+    }
+  };
+
+  const incrementQuantity = async (id: string) => {
+    try {
+      const res = await axiosCookie.patch(`/api/cart/${id}`, { quantity: 1 });
+      console.log(res.data.message);
+      fetchCart();
+    } catch (err) {
+      console.error(err.response?.data?.message);
+    }
+  };
+
+  const decrementQuantity = async (id: string) => {
+    try {
+      const res = await axiosCookie.patch(`/api/cart/${id}`, { quantity: -1 });
+      console.log(res.data.message);
+      fetchCart();
+    } catch (err) {
+      console.error(err.response?.data?.message);
     }
   };
 
@@ -62,15 +71,7 @@ export default function CartPage() {
     0,
   );
 
-  if (!user) {
-    return (
-      <div className="rounded-lg border border-red-500 bg-yellow-200 p-4 font-semibold text-red-500">
-        Anda belum login, silakan login terlebih dahulu!
-      </div>
-    );
-  }
-
-  return (
+  return user ? (
     <div className="w-full">
       <h1 className="mb-4 text-2xl font-bold text-slate-700">
         Keranjang Belanja
@@ -88,7 +89,13 @@ export default function CartPage() {
       ) : (
         <div className="flex flex-col gap-4">
           {cart.map((item) => (
-            <CartItem key={item.id} item={item} handleRemove={handleRemove} />
+            <CartItem
+              key={item.id}
+              item={item}
+              handleRemove={handleRemove}
+              increment={incrementQuantity}
+              decrement={decrementQuantity}
+            />
           ))}
 
           <div className="mt-4 text-right">
@@ -104,6 +111,10 @@ export default function CartPage() {
           </div>
         </div>
       )}
+    </div>
+  ) : (
+    <div className="rounded-lg border border-red-500 bg-yellow-200 p-4 font-semibold text-red-500">
+      Anda belum login, silakan login terlebih dahulu!
     </div>
   );
 }
